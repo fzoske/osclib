@@ -364,18 +364,19 @@ void SDCConsumerAdapter::stop() {
 
 	if (_httpServer) {
 		_httpServer->stopAll(false);
-	}
 
-	while (_httpServer->currentConnections() != 0) {
-		Poco::Thread::sleep(100);
-	}
+		while (_httpServer->currentConnections() != 0) {
+			Poco::Thread::sleep(100);
+		}
 
-	_httpServer.reset();
+		_httpServer.reset();
+	}
 
 	if (_pingManager) {
 		_pingManager->disable();
 		SDCLibrary::getInstance().dumpPingManager(std::move(_pingManager));
 	}
+
 }
 
 void SDCConsumerAdapter::subscribeEvents() {

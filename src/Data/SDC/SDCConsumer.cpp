@@ -167,6 +167,7 @@ SDCConsumer::SDCConsumer(const OSELib::DPWS::DeviceDescription & deviceDescripti
 	connected = false;
 	try {
 		_adapter = std::unique_ptr<SDCConsumerAdapter>(new SDCConsumerAdapter(*this, _deviceDescription, configuration));
+		log_notice([&] { return "Starting adapter on interface: " + configuration.getBindAddress().toString() + " and port: " + std::to_string(configuration.getPort()) + ". ";});
 		_adapter->start();
 		connected = true;
 	} catch (const Poco::Net::NetException & e) {

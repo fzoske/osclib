@@ -1,12 +1,12 @@
 /*
- * AbstractOSCLibFixture.h
+ * AbstractSDCLibFixture.h
  *
  *  Created on: 23.05.2014
  *      Author: roehser
  */
 
-#ifndef ABSTRACTOSCLIBFIXTURE_H_
-#define ABSTRACTOSCLIBFIXTURE_H_
+#ifndef AbstractSDCLibFixture_H_
+#define AbstractSDCLibFixture_H_
 
 #include <string>
 
@@ -17,9 +17,9 @@
 namespace SDCLib {
 namespace Tests {
 
-struct AbstractOSCLibFixture : public OSELib::WithLogger {
+struct AbstractSDCLibFixture : public OSELib::WithLogger {
 public:
-	AbstractOSCLibFixture(const std::string & testname, OSELib::LogLevel debuglevel, int portStart) :
+	AbstractSDCLibFixture(const std::string & testname, OSELib::LogLevel debuglevel, int portStart) :
 		WithLogger(OSELib::Log::BASE),
 		testname(testname)
 	{
@@ -28,7 +28,7 @@ public:
         SDCLibrary::getInstance().setPortStart(portStart);
 	}
 
-	virtual ~AbstractOSCLibFixture() {
+	virtual ~AbstractSDCLibFixture() {
 		SDCLibrary::getInstance().shutdown();
 		log_notice([&]{ return testname + ":  Shutdown."; });
 	}
@@ -40,4 +40,4 @@ private:
 }
 }
 
-#endif /* ABSTRACTOSCLIBFIXTURE_H_ */
+#endif /* AbstractSDCLibFixture_H_ */

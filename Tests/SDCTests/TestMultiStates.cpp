@@ -60,7 +60,7 @@
 #include "OSCLib/Util/DebugOut.h"
 
 // Testing framework
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -212,8 +212,8 @@ private:
 }
 }
 
-struct FixtureMultiStatesTest: Tests::AbstractOSCLibFixture {
-	FixtureMultiStatesTest() : AbstractOSCLibFixture("FixtureMultiStateTest", OSELib::LogLevel::Notice, 10000) {}
+struct FixtureMultiStatesTest: Tests::AbstractSDCLibFixture {
+	FixtureMultiStatesTest() : AbstractSDCLibFixture("FixtureMultiStateTest", OSELib::LogLevel::Notice, 10000) {}
 };
 
 SUITE(OSCP) {

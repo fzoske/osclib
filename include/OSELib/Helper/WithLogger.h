@@ -23,7 +23,7 @@ namespace Log {
  * event management on the provider side.
  *
  */
-	const std::string BASE("OSCLIB");
+	const std::string BASE("SDCLIB");
 	const std::string RAWMESSAGES(BASE + ".RAW");
 	const std::string SCHEMA(RAWMESSAGES + ".SCHEMA");
 	const std::string SOAP(RAWMESSAGES + ".SOAP");

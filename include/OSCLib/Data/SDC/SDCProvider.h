@@ -182,6 +182,14 @@ public:
     */
     void shutdown();
     
+    /**
+    * @brief Tells if the Provider is currentlich running, i.e. if the apapter is initialized properly.
+    *
+    * @return The current running state
+    */
+    bool isRunning();
+
+
     template<class T>
     void replaceState(const T & state);
 
@@ -384,7 +392,7 @@ private:
     
     MDPWSTransportLayerConfiguration configuration;
 
-//    std::map<std::string, int> streamingPorts;
+    bool runningState;
 
 };
 

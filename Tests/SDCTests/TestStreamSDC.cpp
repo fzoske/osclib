@@ -50,7 +50,7 @@
 #include "OSCLib/Data/SDC/MDIB/VmdDescriptor.h"
 #include "OSCLib/Util/DebugOut.h"
 #include "OSCLib/Util/Task.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -341,8 +341,8 @@ public:
 }
 }
 
-struct FixtureStreamSDC : Tests::AbstractOSCLibFixture {
-	FixtureStreamSDC() : AbstractOSCLibFixture("FixtureStreamSDC", OSELib::LogLevel::Notice, 10000) {}
+struct FixtureStreamSDC : Tests::AbstractSDCLibFixture {
+	FixtureStreamSDC() : AbstractSDCLibFixture("FixtureStreamSDC", OSELib::LogLevel::Notice, 10000) {}
 };
 
 SUITE(OSCP) {

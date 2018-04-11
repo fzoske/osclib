@@ -517,6 +517,7 @@ Tests/SDCTests/TestMultiSDC.cpp
 Tests/SDCTests/TestSimpleSDC.cpp
 Tests/SDCTests/TestPeriodicEvents.cpp
 Tests/SDCTests/TestStreamSDC.cpp
+Tests/SDCTests/TestSocketBinding.cpp
 Tests/UnitTest++/src/Test.cpp
 Tests/UnitTest++/src/TestList.cpp
 Tests/UnitTest++/src/TestRunner.cpp

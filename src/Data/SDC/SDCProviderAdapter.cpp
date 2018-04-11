@@ -429,10 +429,9 @@ void SDCProviderAdapter::stop() {
 	}
 	if (_httpServer) {
 		_httpServer->stopAll(false);
-	}
-
-	while (_httpServer->currentConnections() != 0) {
-		Poco::Thread::sleep(100);
+		while (_httpServer->currentConnections() != 0) {
+				Poco::Thread::sleep(100);
+		}
 	}
 
 	_dpwsHost.reset();

@@ -183,6 +183,8 @@ std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::connectXAddress(
 				deviceDescription.addDeviceURI(Poco::URI(xaddress));
 				log_debug([&] { return "XAddress reachable: " + xaddress; });
 				connectionPossible_flag = 1;
+			} catch (std::runtime_error e) {
+				log_debug([&] { return "XAddress not reachable: " + xaddress + ". Due to error: " + e.what(); });
 			} catch (...) {
 				log_debug([&] { return "XAddress not reachable: " + xaddress; });
 			}
@@ -287,7 +289,12 @@ std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::connectXAddress(
 
 	log_debug([&] { return "Discovery complete for device with uri: " + deviceDescription.getDeviceURI().toString(); });
 
+	// try to connect to provider given with device description
 	std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> result(new SDCLib::Data::SDC::SDCConsumer(deviceDescription, configuration));
+
+	if (!result) {
+		return nullptr;
+	}
 
 	if (!result->isConnected()) {
 		result->disconnect();

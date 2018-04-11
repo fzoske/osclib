@@ -13,7 +13,7 @@
 #include "OSCLib/Data/SDC/MDIB/MetaData.h"
 #include "OSCLib/Util/DebugOut.h"
 #include "OSCLib/Util/Task.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -89,8 +89,8 @@ private:
 }
 }
 
-struct FixtureDICOMOSCP : Tests::AbstractOSCLibFixture {
-	FixtureDICOMOSCP() : AbstractOSCLibFixture("FixtureDICOMOSCP", OSELib::LogLevel::Notice, 9050) {}
+struct FixtureDICOMOSCP : Tests::AbstractSDCLibFixture {
+	FixtureDICOMOSCP() : AbstractSDCLibFixture("FixtureDICOMOSCP", OSELib::LogLevel::Notice, 9050) {}
 };
 
 SUITE(OSCP) {

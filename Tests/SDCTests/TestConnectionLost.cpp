@@ -14,7 +14,7 @@
 #include "OSCLib/Data/SDC/MDIB/MetaData.h"
 #include "OSCLib/Data/SDC/MDIB/VmdDescriptor.h"
 #include "OSCLib/Util/DebugOut.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -101,8 +101,8 @@ private:
 } /* namespace Tests */
 } /* namespace SDCLib */
 
-struct FixtureConnectionLostSDC : Tests::AbstractOSCLibFixture {
-	FixtureConnectionLostSDC() : AbstractOSCLibFixture("FixtureConnectionLostSDC", OSELib::LogLevel::Notice, 8150) {}
+struct FixtureConnectionLostSDC : Tests::AbstractSDCLibFixture {
+	FixtureConnectionLostSDC() : AbstractSDCLibFixture("FixtureConnectionLostSDC", OSELib::LogLevel::Notice, 8150) {}
 };
 
 SUITE(OSCP) {

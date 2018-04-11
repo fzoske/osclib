@@ -86,7 +86,7 @@
 #include "OSCLib/Data/SDC/MDIB/custom/OperationInvocationContext.h"
 #include "OSCLib/Util/DebugOut.h"
 #include "OSCLib/Util/Task.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include <memory>
@@ -1035,8 +1035,8 @@ private:
 // Test
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct FixtureSimpleSDC : Tests::AbstractOSCLibFixture {
-	FixtureSimpleSDC() : AbstractOSCLibFixture("FixtureSimpleSDC", OSELib::LogLevel::Error, 9000) {}
+struct FixtureSimpleSDC : Tests::AbstractSDCLibFixture {
+	FixtureSimpleSDC() : AbstractSDCLibFixture("FixtureSimpleSDC", OSELib::LogLevel::Error, 9000) {}
 };
 
 SUITE(OSCP) {

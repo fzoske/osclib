@@ -30,7 +30,7 @@
 #include "OSCLib/Data/SDC/MDIB/VmdDescriptor.h"
 #include "OSCLib/Data/SDC/MDIB/VmdState.h"
 #include "OSCLib/Util/DebugOut.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -421,8 +421,8 @@ private:
 // Test
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-struct FixturePeriodicEvents : Tests::AbstractOSCLibFixture {
-	FixturePeriodicEvents() : AbstractOSCLibFixture("FixturePeriodicEvents", OSELib::LogLevel::Error, 9100) {}
+struct FixturePeriodicEvents : Tests::AbstractSDCLibFixture {
+	FixturePeriodicEvents() : AbstractSDCLibFixture("FixturePeriodicEvents", OSELib::LogLevel::Error, 9100) {}
 };
 
 SUITE(OSCP) {

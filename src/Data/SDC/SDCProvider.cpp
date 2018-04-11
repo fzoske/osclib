@@ -19,6 +19,7 @@
  *
  *  @Copyright (C) 2018, SurgiTAIX AG
  *  Author: roehser, besting, buerger
+ *
  */
 
 #include <memory>
@@ -184,8 +185,10 @@ bool SDCProvider::isMetricChangeAllowed(const StateType & state, SDCProvider & p
 
 SDCProvider::SDCProvider() :
 	WithLogger(OSELib::Log::sdcProvider),
+	providerInvoker(),
 	periodicEventInterval(10, 0),
-	configuration(MDPWSTransportLayerConfiguration())
+	configuration(MDPWSTransportLayerConfiguration()),
+	runningState(false)
 {
 	atomicTransactionId.store(0);
 	mdibVersion.store(0);
@@ -959,6 +962,7 @@ MdState SDCProvider::getMdState() {
 
 void SDCProvider::startup() {
 	try {
+		log_notice([&] { return "Starting adapter on interface: " + configuration.getBindAddress().toString() + " and port: " + std::to_string(configuration.getPort()) + ". ";});
 		_adapter->start(configuration);
 	} catch (const Poco::Net::NetException & e) {
 		log_error([&] { return "Net Exception: " + std::string(e.what()) + " Socket unable to be opened. Provider startup aborted.";});
@@ -1036,6 +1040,7 @@ void SDCProvider::startup() {
 			std::exit(1);
 		}
     }
+    runningState = true;
 }
 
 void SDCProvider::shutdown() {
@@ -1047,7 +1052,14 @@ void SDCProvider::shutdown() {
 		_adapter->stop();
 		_adapter.reset();
 	}
+	runningState = false;
+	Poco::Mutex::ScopedLock unlock(mutex);
 }
+
+bool SDCProvider::isRunning() {
+	return runningState;
+}
+
 
 template<class T> void SDCProvider::replaceState(const T & object) {
     Poco::Mutex::ScopedLock lock(mutex);

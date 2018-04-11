@@ -12,7 +12,7 @@
 #include "OSCLib/Data/SDC/MDIB/MetaData.h"
 #include "OSCLib/Data/SDC/MDIB/VmdDescriptor.h"
 #include "OSCLib/Util/DebugOut.h"
-#include "../AbstractOSCLibFixture.h"
+#include "../AbstractSDCLibFixture.h"
 #include "../UnitTest++/src/UnitTest++.h"
 
 #include "OSELib/SDC/ServiceManager.h"
@@ -96,8 +96,8 @@ private:
 } /* namespace Tests */
 } /* namespace SDCLib */
 
-struct FixtureMultiOSCP : Tests::AbstractOSCLibFixture {
-	FixtureMultiOSCP() : AbstractOSCLibFixture("FixtureMultiOSCP", OSELib::LogLevel::Notice, 8000) {}
+struct FixtureMultiOSCP : Tests::AbstractSDCLibFixture {
+	FixtureMultiOSCP() : AbstractSDCLibFixture("FixtureMultiOSCP", OSELib::LogLevel::Notice, 8000) {}
 };
 
 SUITE(OSCP) {
