@@ -66,23 +66,49 @@ public:
 	 */
 	void shutdown();
 
+	bool isInitialized();
+
 	/**
-	 * Set the next global free port number used for bindings which are automatically created.
+	 * Define which specific ports are free to use for the system.
+	 *
+	 * @param portList The list of free ports
+	 */
+	void setPortList(std::deque<unsigned int> portList);
+
+	/**
+	 * Define which specific ports are free to use for the system.
+	 *
+	 * @param portList The list of free ports
+	 */
+	std::deque<unsigned int> getAvailablePorts();
+
+	/**
+	 * Autocreates a list of free port given by the starting number and the range.
+	 * The port number are just increased by one for portRange times.
 	 *
 	 * @param portStart The next free port number to use
 	 */
-	void setPortStart(unsigned int portStart, unsigned int portRange = 1000);
+	void createIncreasingPortList(unsigned int portStart, unsigned int portRange = 1000);
 
 	/**
-	 * Get the next global free port number used for bindings which are automatically created.
-	 * Increases current number by one.
+	 * Get the next global free port number used for bindings out of a list of free ports.
 	 * 	 *
 	 * @return The next free port number to use
 	 */
 	unsigned int extractFreePort();
+	/**
+	 * Returns the port to the list of free ports if the port was in the initialized list before.
+	 *
+	 *  @params port The port to return
+	 */
 	void returnPortToPool(unsigned int port);
 
-	bool isInitialized();
+	/**
+	 * Check if some ports are bound to sockets.
+	 *
+	 * @return The status if some ports are bound.
+	 */
+	bool isPortListInUse();
 
 	void dumpPingManager(std::unique_ptr<OSELib::DPWS::PingManager> pingManager);
 
@@ -110,6 +136,7 @@ private:
 	bool m_IP6enabled;
 	bool initialized;
 	int m_discoveryTimeMilSec;
+	bool portListInUseStatus;
 
 	void createPortLists(unsigned int portStart, unsigned int portRange = 1000);
 	std::deque<unsigned int> reservedPorts;

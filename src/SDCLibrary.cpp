@@ -42,14 +42,15 @@
 
 namespace SDCLib {
 
-const std::string CURRENT_LIB_VERSION("3.0.1");
+const std::string CURRENT_LIB_VERSION("3.0.3");
 
 SDCLibrary::SDCLibrary() :
 	WithLogger(OSELib::Log::BASE),
 	initialized(false),
 	m_IP4enabled(true),
 	m_IP6enabled(true),
-	m_discoveryTimeMilSec(5000)
+	m_discoveryTimeMilSec(5000),
+	portListInUseStatus(false)
 {
 	Poco::AutoPtr<Poco::ConsoleChannel> consoleChannel(new Poco::ConsoleChannel);
 	Poco::AutoPtr<Poco::SimpleFileChannel> fileChannel(new Poco::SimpleFileChannel);
@@ -81,7 +82,7 @@ void SDCLibrary::startup(OSELib::LogLevel debugLevel) {
 	if (!initialized) {
 		initialized = true;
 		setDebugLevel(debugLevel);
-		log_notice([&]{ return "SDCLib version " + CURRENT_LIB_VERSION + " (C) 2016 SurgiTAIX AG"; });
+		log_notice([&]{ return "SDCLib version " + CURRENT_LIB_VERSION + " (C) 2018 SurgiTAIX AG"; });
         xercesc::XMLPlatformUtils::Initialize();
 	} else {
 		log_error([&]{ return "SDCLib already initialized!"; });
@@ -96,13 +97,35 @@ void SDCLibrary::shutdown() {
 	}
 }
 
-void SDCLibrary::setPortStart(unsigned int start, unsigned int range) {
+
+void SDCLibrary::setPortList(std::deque<unsigned int> portList) {
 	Poco::Mutex::ScopedLock lock(mutex);
 
-	const auto end(start + range);
-	log_information([&]{ return "Using ports: [" + std::to_string(start) + "," + std::to_string(end) + ")"; });
+	if (!isPortListInUse()) {
+		reservedPorts.clear();
+		reservedPorts = portList;
+		availablePorts.clear();
+		availablePorts = portList;
+	} else {
+		log_error([&] {return "Some ports are already in use (bound to sockets). Operation not possible. Please restart the whole library to change port list.";});
+	}
+}
 
-	createPortLists(start, range);
+std::deque<unsigned int> SDCLibrary::getAvailablePorts() {
+	return availablePorts;
+}
+
+void SDCLibrary::createIncreasingPortList(unsigned int start, unsigned int range) {
+	Poco::Mutex::ScopedLock lock(mutex);
+
+	if (!isPortListInUse()) {
+		const auto end(start + range);
+		log_information([&]{ return "Using ports: [" + std::to_string(start) + "," + std::to_string(end) + ")"; });
+
+		createPortLists(start, range);
+	} else {
+		log_error([&] {return "Some ports are already in use (bound to sockets). Operation not possible. Please restart the whole library to change port list.";});
+	}
 }
 
 void SDCLibrary::createPortLists(unsigned int start, unsigned int range) {
@@ -117,14 +140,23 @@ unsigned int SDCLibrary::extractFreePort() {
 	Poco::Mutex::ScopedLock lock(mutex);
 	const unsigned int result(availablePorts.front());
 	availablePorts.pop_front();
+	portListInUseStatus = true;
 	return result;
 }
 
 void SDCLibrary::returnPortToPool(unsigned int port) {
 	Poco::Mutex::ScopedLock lock(mutex);
 	if (std::find(reservedPorts.begin(), reservedPorts.end(), port) != reservedPorts.end()) {
-		availablePorts.push_back(port);
+		// no doubling ports if user tries to return a port already returned
+		if (std::find(availablePorts.begin(), availablePorts.end(), port) == availablePorts.end()) {
+			// pushed to back to leave some time if a socket is opened shortly after again
+			availablePorts.push_back(port);
+		}
 	}
+}
+
+bool SDCLibrary::isPortListInUse() {
+	return portListInUseStatus;
 }
 
 void SDCLibrary::dumpPingManager(std::unique_ptr<OSELib::DPWS::PingManager> pingManager) {

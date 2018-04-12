@@ -28,6 +28,13 @@ public:
 	MDPWSTransportLayerConfiguration();
 
 	/**
+	* @brief Copyconstructor gets a new port von port management. Otherwise same ports may be used twice
+	* (if shared pointers are not used)
+	*
+	*/
+	MDPWSTransportLayerConfiguration(const MDPWSTransportLayerConfiguration & obj);
+
+	/**
 	* @brief Destructor frees the port (puts it back into library singleton)
 	*
 	*/
@@ -38,7 +45,7 @@ public:
 	*
 	* @return the ip address to be bound to.
 	*/
-	Poco::Net::IPAddress getBindAddress();
+	Poco::Net::IPAddress getBindAddress() const;
 
 
     /**
@@ -46,14 +53,14 @@ public:
     *
     * @param httpBindAddress the ip address to be bound to.
     */
-	void setBindAddress(Poco::Net::IPAddress httpBindAddress);
+	void setBindAddress(const Poco::Net::IPAddress & httpBindAddress);
 
     /**
     * @brief Get the port to bind the httpServer to
     *
     * @return The port
     */
-	unsigned int getPort();
+	unsigned int getPort() const;
 
 	/**
 	* @brief Set the port to bind the httpServer to. By default the port is assigned automatically to a free one.
@@ -62,12 +69,18 @@ public:
 	*
 	* @param port the port
 	*/
-	void setPort(unsigned int port);
+	void setPort(const unsigned int port);
+
+	/**
+	* @brief set if a custom port is set. In such a case the port is not returned to the free ports list after deletion.
+	*
+	* @return The Status
+	*/
+	bool hasCustomPort() const;
 
 private:
 	Poco::Net::IPAddress m_httpBindAddress;
 	unsigned int m_port;
-	// set if a custom port is set. In such a case the port is not returned to the free ports list after deletion.
 	bool customPortFlag;
 };
 } /* namespace SDC */

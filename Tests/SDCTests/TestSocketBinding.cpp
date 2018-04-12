@@ -89,6 +89,18 @@ private:
 	SDCProvider sdcProvider;
 };
 
+void outputAvailablePorts()
+{
+	std::deque<unsigned int> portList = SDCLibrary::getInstance().getAvailablePorts();
+	std::string portsAsString = "";
+	for (auto port : portList) {
+		portsAsString = portsAsString + ", " + std::to_string(port);
+
+	}
+	DebugOut(DebugOut::Default, "TestSocketBinding") << "Available Ports: " << portsAsString;
+	DebugOut(DebugOut::Default, "TestSocketBinding") << "Total lenght: " + std::to_string(portList.size());
+}
+
 }
 }
 }
@@ -97,10 +109,22 @@ struct FixtureSocketBindingSDC : Tests::AbstractSDCLibFixture {
 	FixtureSocketBindingSDC() : AbstractSDCLibFixture("FixturesSocketBindingSDC", OSELib::LogLevel::Debug, 10000) {}
 };
 
+
+
+
 SUITE(OSCP) {
 TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 {
 	DebugOut::openLogFile("TestSocketBinding.log.txt", true);
+	// Define open ports
+	{
+		std::deque<unsigned int> portList;
+		for (unsigned int i = 2000; i < 2010; i++) {
+			portList.push_back(i);
+		}
+		SDCLibrary::getInstance().setPortList(portList);
+	}
+	SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
 	try
 	{
 		OSELib::SDC::ServiceManager oscpsm;
@@ -120,16 +144,19 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Consumer discovery..." << std::endl;
 			std::shared_ptr<SDCConsumer> c(oscpsm.discoverEndpointReference(SDCLib::Tests::SocketBindingSDC::deviceEPR));
 
+			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
 			// Discovery test
 			CHECK_EQUAL(true, c != nullptr);
 			if (c) {
 				c->disconnect();
 				c.reset();
 			}
+			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
 
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider shutdown." << std::endl;
 			testProvider->shutdown();
 			testProvider.reset();
+			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
 		}
 
         //

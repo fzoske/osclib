@@ -25,7 +25,7 @@ public:
 	{
 		log_notice([&]{ return testname + ":  Startup."; });
 		SDCLibrary::getInstance().startup(debuglevel);
-        SDCLibrary::getInstance().setPortStart(portStart);
+        SDCLibrary::getInstance().createIncreasingPortList(portStart);
 	}
 
 	virtual ~AbstractSDCLibFixture() {

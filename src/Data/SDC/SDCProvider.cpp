@@ -187,7 +187,7 @@ SDCProvider::SDCProvider() :
 	WithLogger(OSELib::Log::sdcProvider),
 	providerInvoker(),
 	periodicEventInterval(10, 0),
-	configuration(MDPWSTransportLayerConfiguration()),
+	configuration(),
 	runningState(false)
 {
 	atomicTransactionId.store(0);

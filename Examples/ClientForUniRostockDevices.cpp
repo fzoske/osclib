@@ -91,7 +91,7 @@ private:
 int main() {
 	DebugOut(DebugOut::Default, "ClientForUniRostockDevices") << std::endl << "Startup" << std::endl;
     SDCLibrary::getInstance().startup();
-	SDCLibrary::getInstance().setPortStart(11111);
+	SDCLibrary::getInstance().createIncreasingPortList(11111);
 
 	// Discovery
 	OSELib::SDC::ServiceManager oscpsm;

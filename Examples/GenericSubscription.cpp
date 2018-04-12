@@ -206,7 +206,7 @@ int main (int argc, char * argv[])
 
 	DebugOut(DebugOut::Default, "GenericSubscription") << std::endl << "Startup";
 	SDCLibrary::getInstance().startup();
-	SDCLibrary::getInstance().setPortStart(42000);
+	SDCLibrary::getInstance().createIncreasingPortList(42000);
 
 	OSELib::SDC::ServiceManager oscpsm;
 	std::unique_ptr<SDCConsumer> consumer(oscpsm.discoverEndpointReference(epr));
