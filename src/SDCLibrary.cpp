@@ -92,6 +92,12 @@ void SDCLibrary::startup(OSELib::LogLevel debugLevel) {
 void SDCLibrary::shutdown() {
 	if (initialized) {
         initialized = false;
+    	m_IP4enabled = true;
+    	m_IP6enabled = true;
+    	m_discoveryTimeMilSec = 5000;
+    	portListInUseStatus = false;
+    	createPortLists(5000, 1000);
+
         _latestPingManager.reset();
         xercesc::XMLPlatformUtils::Terminate();
 	}

@@ -1,7 +1,7 @@
 /*
- * MDPWSTransportLayerConfiguration.h
+ * MDPWSTransportLayerConfigurationImpl.h
  *
- *  @file MDPWSTransportLayerConfiguration.h
+ *  @file MDPWSTransportLayerConfigurationImpl.h
  *  @project SDCLib
  *  @date 04.04.18
  *  @author buerger
@@ -9,36 +9,36 @@
  *
  */
 
-#ifndef INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATION_H_
-#define INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATION_H_
+#ifndef INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATIONIMPL_H_
+#define INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATIONIMPL_H_
 
 #include "Poco/Net/IPAddress.h"
-#include "OSCLib/Data/SDC/MDPWSTransportLayerConfigurationImpl.h"
 
 namespace SDCLib {
 namespace Data {
 namespace SDC {
 
-// Wrapping configuration object. Has a pointer to the data to ensure single use of one port per object (no actual copying of the object)
-
-class MDPWSTransportLayerConfiguration {
+class MDPWSTransportLayerConfigurationImpl {
 public:
 
 	/**
 	* @brief Constructor initializes object with a free port
 	*
 	*/
-	MDPWSTransportLayerConfiguration();
+	MDPWSTransportLayerConfigurationImpl();
 
 	/**
-	* @brief Copy constructor just copies the data of the wrapping object
+	* @brief Copyconstructor gets a new port von port management. Otherwise same ports may be used twice
+	* (if shared pointers are not used)
 	*
 	*/
-	MDPWSTransportLayerConfiguration(const MDPWSTransportLayerConfiguration & obj);
+	MDPWSTransportLayerConfigurationImpl(const MDPWSTransportLayerConfigurationImpl & obj);
 
-	~MDPWSTransportLayerConfiguration();
-
-	MDPWSTransportLayerConfiguration & operator=(const MDPWSTransportLayerConfiguration & obj);
+	/**
+	* @brief Destructor frees the port (puts it back into library singleton)
+	*
+	*/
+	~MDPWSTransportLayerConfigurationImpl();
 
 	/**
 	* @brief Get the IP address the socket will be bound to or is bound to.
@@ -79,9 +79,11 @@ public:
 	bool hasCustomPort() const;
 
 private:
-	std::shared_ptr<MDPWSTransportLayerConfigurationImpl> data;
+	Poco::Net::IPAddress m_httpBindAddress;
+	unsigned int m_port;
+	bool customPortFlag;
 };
 } /* namespace SDC */
 } /* namespace Data */
 } /* namespace SDCLib */
-#endif /* INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATION_H_ */
+#endif /* INCLUDE_OSELIB_SDC_MDPWSTRANSPORTLAYERCONFIGURATIONIMPL_H_ */

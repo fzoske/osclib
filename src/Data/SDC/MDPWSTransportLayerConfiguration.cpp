@@ -32,51 +32,40 @@ namespace SDC {
 
 // default configuration
 MDPWSTransportLayerConfiguration::MDPWSTransportLayerConfiguration() :
-		m_httpBindAddress(Poco::Net::IPAddress::Family::IPv4),
-		customPortFlag(false) {
-	m_port = SDCLib::SDCLibrary::getInstance().extractFreePort();
+		data(new MDPWSTransportLayerConfigurationImpl()) {
 }
 
 MDPWSTransportLayerConfiguration::MDPWSTransportLayerConfiguration(const MDPWSTransportLayerConfiguration & obj) :
-	m_httpBindAddress(obj.getBindAddress()),
-	customPortFlag(obj.hasCustomPort()) {
-	if (!customPortFlag) {
-		m_port = SDCLib::SDCLibrary::getInstance().extractFreePort();
-	} else {
-		m_port = obj.getPort();
-	}
-
+		data(obj.data) {
 }
 
+// do nothing. port is returned in data's destructor
 MDPWSTransportLayerConfiguration::~MDPWSTransportLayerConfiguration() {
-	if (!customPortFlag) {
-		SDCLib::SDCLibrary::getInstance().returnPortToPool(m_port);
-	}
+}
+
+MDPWSTransportLayerConfiguration & MDPWSTransportLayerConfiguration::operator=(const MDPWSTransportLayerConfiguration & obj) {
+	data = obj.data;
+	return *this;
 }
 
 void MDPWSTransportLayerConfiguration::setBindAddress(const Poco::Net::IPAddress & bindAddress) {
-	m_httpBindAddress = bindAddress;
+	data->setBindAddress(bindAddress);
 }
 
 Poco::Net::IPAddress MDPWSTransportLayerConfiguration::getBindAddress() const{
-	return m_httpBindAddress;
+	return data->getBindAddress();
 }
 
 unsigned int MDPWSTransportLayerConfiguration::getPort() const{
-	return m_port;
+	return data->getPort();
 }
 
 void MDPWSTransportLayerConfiguration::setPort(const unsigned int port) {
-	// return the port to the pool
-	if (!customPortFlag) {
-		SDCLibrary::getInstance().returnPortToPool(m_port);
-		customPortFlag = true;
-	}
-	m_port = port;
+	data->setPort(port);
 }
 
 bool MDPWSTransportLayerConfiguration::hasCustomPort() const {
-	return customPortFlag;
+	return data->hasCustomPort();
 }
 } /* namespace SDC */
 } /* namespace Data */

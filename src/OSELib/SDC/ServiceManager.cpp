@@ -23,6 +23,8 @@
 #include "OSELib/SDC/ServiceManager.h"
 #include "OSELib/SOAP/GenericSoapInvoke.h"
 
+#include "OSCLib/Data/SDC/MDPWSTransportLayerConfiguration.h"
+
 namespace OSELib {
 namespace SDC {
 
@@ -77,7 +79,6 @@ std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::discoverEndpoint
 	configuration = consumerConfig;
 	return discoverEndpointReference(epr);
 }
-
 
 std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::discoverEndpointReference(const std::string & epr) {
 
@@ -183,7 +184,7 @@ std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::connectXAddress(
 				deviceDescription.addDeviceURI(Poco::URI(xaddress));
 				log_debug([&] { return "XAddress reachable: " + xaddress; });
 				connectionPossible_flag = 1;
-			} catch (std::runtime_error e) {
+			} catch (std::runtime_error & e) {
 				log_debug([&] { return "XAddress not reachable: " + xaddress + ". Due to error: " + e.what(); });
 			} catch (...) {
 				log_debug([&] { return "XAddress not reachable: " + xaddress; });
@@ -305,6 +306,9 @@ std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> ServiceManager::connectXAddress(
 		result->disconnect();
 		return nullptr;
 	}
+
+	// generate a new configuration for a new port
+	configuration = SDCLib::Data::SDC::MDPWSTransportLayerConfiguration();
 	return std::move(result);
 }
 

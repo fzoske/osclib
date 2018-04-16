@@ -89,24 +89,12 @@ private:
 	SDCProvider sdcProvider;
 };
 
-void outputAvailablePorts()
-{
-	std::deque<unsigned int> portList = SDCLibrary::getInstance().getAvailablePorts();
-	std::string portsAsString = "";
-	for (auto port : portList) {
-		portsAsString = portsAsString + ", " + std::to_string(port);
-
-	}
-	DebugOut(DebugOut::Default, "TestSocketBinding") << "Available Ports: " << portsAsString;
-	DebugOut(DebugOut::Default, "TestSocketBinding") << "Total lenght: " + std::to_string(portList.size());
-}
-
 }
 }
 }
 
 struct FixtureSocketBindingSDC : Tests::AbstractSDCLibFixture {
-	FixtureSocketBindingSDC() : AbstractSDCLibFixture("FixturesSocketBindingSDC", OSELib::LogLevel::Debug, 10000) {}
+	FixtureSocketBindingSDC() : AbstractSDCLibFixture("FixturesSocketBindingSDC", OSELib::LogLevel::Warning, 10000) {}
 };
 
 
@@ -116,24 +104,28 @@ SUITE(OSCP) {
 TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 {
 	DebugOut::openLogFile("TestSocketBinding.log.txt", true);
-	// Define open ports
+	// Define 10 open ports
 	{
 		std::deque<unsigned int> portList;
-		for (unsigned int i = 2000; i < 2010; i++) {
+		for (unsigned int i = 5000; i < 5010; i++) {
 			portList.push_back(i);
 		}
 		SDCLibrary::getInstance().setPortList(portList);
 	}
-	SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
+	CHECK_EQUAL(10, SDCLibrary::getInstance().getAvailablePorts().size());
 	try
 	{
+
 		OSELib::SDC::ServiceManager oscpsm;
+		// service manager always holds an open port ready for discovery
+		CHECK_EQUAL(9, SDCLibrary::getInstance().getAvailablePorts().size());
 		//
 		// 1. Default binding
 		//
 		{
         // Provider
 			std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider> testProvider(new SDCLib::Tests::SocketBindingSDC::TestProvider(SDCLib::Tests::SocketBindingSDC::deviceEPR));
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "1. Test: Default binding" << std::endl;
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider init.." << std::endl;
@@ -143,20 +135,18 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 			// Consumer
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Consumer discovery..." << std::endl;
 			std::shared_ptr<SDCConsumer> c(oscpsm.discoverEndpointReference(SDCLib::Tests::SocketBindingSDC::deviceEPR));
-
-			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
+			CHECK_EQUAL(7, SDCLibrary::getInstance().getAvailablePorts().size());
 			// Discovery test
 			CHECK_EQUAL(true, c != nullptr);
 			if (c) {
 				c->disconnect();
 				c.reset();
 			}
-			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
-
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider shutdown." << std::endl;
 			testProvider->shutdown();
 			testProvider.reset();
-			SDCLib::Tests::SocketBindingSDC::outputAvailablePorts();
+			CHECK_EQUAL(9, SDCLibrary::getInstance().getAvailablePorts().size());
 		}
 
         //
@@ -164,9 +154,9 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 		//
 		{
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "2. Test: Binding to a specific valid interface defined by its IP. " << std::endl;
-
 			// Provider, reinit
 			std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider> testProvider = std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider>(new SDCLib::Tests::SocketBindingSDC::TestProvider(SDCLib::Tests::SocketBindingSDC::deviceEPR));
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 
 			// binding to localhost is not possible, thus connect to real interface's IP Address
 			Poco::Net::NetworkInterface netInterface;
@@ -181,25 +171,27 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Trying to bind to interface: " << addr.toString() << std::endl;
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider init.." << std::endl;
 			testProvider->bindToInterface(addr);
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 			testProvider->startup();
 			CHECK_EQUAL(true, testProvider->isRunning());
 
 			// Consumer
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Consumer discovery..." << std::endl;
 			MDPWSTransportLayerConfiguration config;
+			CHECK_EQUAL(7, SDCLibrary::getInstance().getAvailablePorts().size());
 			config.setBindAddress(addr);
 			std::shared_ptr<SDCConsumer> c = std::shared_ptr<SDCConsumer>(oscpsm.discoverEndpointReference(SDCLib::Tests::SocketBindingSDC::deviceEPR, config));
-
 			// Discovery test
 			CHECK_EQUAL(true, c != nullptr);
 			if (c) {
 				c->disconnect();
 				c.reset();
 			}
-
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider shutdown." << std::endl;
 			testProvider->shutdown();
 			testProvider.reset();
+
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 		}
 
 		//
@@ -207,10 +199,8 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 		//
 		{
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "3. Test: Binding to the a wrong interface (42.42.42.42). " << std::endl;
-
 			// Provider, reinit
 			std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider> testProvider = std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider>(new SDCLib::Tests::SocketBindingSDC::TestProvider(SDCLib::Tests::SocketBindingSDC::deviceEPR));
-
 			// binding to localhost is not possible, thus connect to real interface's IP Address
 			const Poco::Net::IPAddress addr = Poco::Net::IPAddress("42.42.42.42");
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Trying to bind to interface: " << addr.toString() << std::endl;
@@ -246,12 +236,13 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 
 			// Provider, reinit
 			std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider> testProvider = std::unique_ptr<SDCLib::Tests::SocketBindingSDC::TestProvider>(new SDCLib::Tests::SocketBindingSDC::TestProvider(SDCLib::Tests::SocketBindingSDC::deviceEPR));
-
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 			// binding to localhost is not possible, thus connect to real interface's IP Address
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Trying to bind to port: " << "6464" << std::endl;
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Provider init.." << std::endl;
 			// use default interface but custom port
 			testProvider->bindToPort(6464);
+			CHECK_EQUAL(9, SDCLibrary::getInstance().getAvailablePorts().size());
 			testProvider->startup();
 			CHECK_EQUAL(true, testProvider->isRunning());
 
@@ -260,7 +251,9 @@ TEST_FIXTURE(FixtureSocketBindingSDC, socketbindingsdc)
 			DebugOut(DebugOut::Default, "TestSocketBinding") << "Consumer discovery..." << std::endl;
 			// use default interface but custom port
 			MDPWSTransportLayerConfiguration config;
+			CHECK_EQUAL(8, SDCLibrary::getInstance().getAvailablePorts().size());
 			config.setPort(6464);
+			CHECK_EQUAL(9, SDCLibrary::getInstance().getAvailablePorts().size());
 			std::shared_ptr<SDCConsumer> c = std::shared_ptr<SDCConsumer>(oscpsm.discoverEndpointReference(SDCLib::Tests::SocketBindingSDC::deviceEPR, config));
 
 			// Check if discovery failed

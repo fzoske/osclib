@@ -12,6 +12,7 @@
 
 #include "OSELib/fwd.h"
 #include "OSELib/Helper/WithLogger.h"
+#include "OSCLib/Data/SDC/MDPWSTransportLayerConfiguration.h"
 
 namespace OSELib {
 namespace SDC {
@@ -58,7 +59,7 @@ public:
     * @param epr The endpointreference configuration the custom configuration
     * @return The consumer or null
     */
-	std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> discoverEndpointReference(const std::string & epr, SDCLib::Data::SDC::MDPWSTransportLayerConfiguration ConsumerConfig);
+	std::unique_ptr<SDCLib::Data::SDC::SDCConsumer> discoverEndpointReference(const std::string & epr, SDCLib::Data::SDC::MDPWSTransportLayerConfiguration consumerConfig);
 
     /**
     * @brief Discover all SDC providers currently available

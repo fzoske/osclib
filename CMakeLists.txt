@@ -218,6 +218,7 @@ set(SDCLibSOURCES
 ./src/Data/SDC/MDIB/custom/AlertSystemDescriptorCustomImpl.cxx
 ./src/Data/SDC/FutureInvocationState.cpp
 ./src/Data/SDC/MDPWSTransportLayerConfiguration.cpp
+./src/Data/SDC/MDPWSTransportLayerConfigurationImpl.cpp
 ./src/Data/SDC/SDCConsumer.cpp
 ./src/Data/SDC/SDCConsumerOperationInvokedHandler.cpp
 ./src/Data/SDC/SDCProvider.cpp
